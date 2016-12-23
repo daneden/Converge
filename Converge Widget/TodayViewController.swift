@@ -32,6 +32,7 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
         // time we called you
         completionHandler(.noData)
         
+        // convertorFormatter will format our input to disallow non-numeric chars
         convertorFormatter = NumberFormatter()
         convertorFormatter.allowsFloats = true
         convertorFormatter.numberStyle = .decimal
@@ -43,6 +44,10 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     }
     
     override func controlTextDidChange(_ obj: Notification) {
+        // Because NumberFormatter.typeValue runs validation on the text field,
+        // we have to make a copy of the text field, grab its value, check for
+        // non-numeric characters ourselves, then validate in order to allow
+        // trailing decimal points.
         let valueField: NSTextField = self.inputField
         let formatter: NumberFormatter = valueField.formatter as! NumberFormatter
         let editor: NSText = valueField.currentEditor()!
@@ -56,6 +61,7 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
             let _ = convertorFormatter.number(from: self.inputField.stringValue)?.stringValue
             self.inputField.stringValue = String(self.latestValue)
         } else {
+            // If all we have are numbers, signs, or decimal points, fire away
             let n = (newVal == nil ? 0 : Float(newVal!))
             self.outputLabel.stringValue = String(cmToIn(n!))
             self.latestValue = n
@@ -66,5 +72,4 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     func cmToIn(_ val: Float) -> Float {
         return val * 0.393701
     }
-    
 }
