@@ -24,7 +24,7 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     @IBOutlet weak var inputField: NSTextField!
     
     var convertorFormatter: NumberFormatter!
-    var latestValue: Float!
+    var latestValue: Double!
     
     func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
         // Update your data and prepare for a snapshot. Call completion handler when you are done
@@ -41,6 +41,11 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
         
         self.inputField.delegate = self
         self.inputField.formatter = convertorFormatter
+        
+        let u = UnitLength.feet
+        let m = Measurement.init(value: 2, unit: u)
+        print(m)
+        print(m.converted(to: UnitLength.meters))
     }
     
     override func controlTextDidChange(_ obj: Notification) {
@@ -62,14 +67,14 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
             self.inputField.stringValue = String(self.latestValue)
         } else {
             // If all we have are numbers, signs, or decimal points, fire away
-            let n = (newVal == nil ? 0 : Float(newVal!))
+            let n = (newVal == nil ? 0 : Double(newVal!))
             self.outputLabel.stringValue = String(cmToIn(n!))
             self.latestValue = n
         }
-        
     }
     
-    func cmToIn(_ val: Float) -> Float {
-        return val * 0.393701
+    func cmToIn(_ val: Double) -> Double {
+        let cm = Measurement.init(value: Double(val), unit: UnitLength.centimeters)
+        return round(cm.converted(to: UnitLength.inches).value * 1000) / 1000
     }
 }

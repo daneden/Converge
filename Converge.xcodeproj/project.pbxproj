@@ -656,6 +656,7 @@
 				715B186D1E0C4CBB00029065 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		715B186E1E0C4CBB00029065 /* Build configuration list for PBXNativeTarget "ConvergeTests" */ = {
 			isa = XCConfigurationList;
@@ -664,6 +665,7 @@
 				715B18701E0C4CBB00029065 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		715B18711E0C4CBB00029065 /* Build configuration list for PBXNativeTarget "ConvergeUITests" */ = {
 			isa = XCConfigurationList;
@@ -672,6 +674,7 @@
 				715B18731E0C4CBB00029065 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		715B188B1E0C4CE100029065 /* Build configuration list for PBXNativeTarget "Converge Widget" */ = {
 			isa = XCConfigurationList;
@@ -680,6 +683,7 @@
 				715B188D1E0C4CE100029065 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
