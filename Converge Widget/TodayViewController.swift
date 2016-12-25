@@ -57,7 +57,6 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
         
         // MARK: Input Field Setup
         self.inputField.delegate = self
-//        self.inputField.formatter = convertorFormatter
         
         // MARK: Pop-Up Menu Setup
         inputPopUp.removeAllItems()
