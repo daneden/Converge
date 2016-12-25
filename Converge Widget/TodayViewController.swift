@@ -32,7 +32,7 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     var convertorFormatter: NumberFormatter!
     
     // latest value of the text input (used as backup for overzealous number formatter)
-    var latestValue: Double!
+    var latestValue: Double! = 0.0
     
     // MARK: Misc. Setup
     // Reset margin insets
@@ -57,7 +57,7 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
         
         // MARK: Input Field Setup
         self.inputField.delegate = self
-        self.inputField.formatter = convertorFormatter
+//        self.inputField.formatter = convertorFormatter
         
         // MARK: Pop-Up Menu Setup
         inputPopUp.removeAllItems()
@@ -81,16 +81,10 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
             opposite: NSPopUpButton,
             changedUnit: [String:Unit]
         
-        if(sender == self.inputPopUp) {
-            changed = self.inputPopUp
-            opposite = self.outputPopUp
-            changedUnit = self.inputUnit
-        } else {
-            changed = self.outputPopUp
-            opposite = self.inputPopUp
-            changedUnit = self.outputUnit
-        }
-        
+        changed     = (sender == self.inputPopUp ? self.inputPopUp : self.outputPopUp)
+        opposite    = (sender == self.inputPopUp ? self.outputPopUp : self.inputPopUp)
+        changedUnit = (sender == self.inputPopUp ? self.inputUnit : self.outputUnit)
+
         if(changed.selectedItem?.title == opposite.selectedItem?.title) {
             opposite.selectItem(withTitle: (changedUnit.first?.key)!)
         }
@@ -120,22 +114,19 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     }
     
     // @updateFromInput reads the input text field, converts the value, and outputs to the output label
-    // FIXME: Overzealous Formatter
-    //        The formatter strips periods and resets the text field when an invalid character is entered.
-    //        Previous behavior was to select entire field when invalid character was entered, and to allow
-    //        periods, which is preferable.
     func updateFromInput() {
         let valueField: NSTextField = self.inputField
-        let val = valueField.objectValue
-        if(val == nil) {
-            
-        }
-        let newVal = (valueField.objectValue != nil ? valueField.objectValue! : 0.0)
+        let val = convertorFormatter.number(from: valueField.objectValue as! String)
+        let newVal = (val != nil ? val : self.latestValue as NSNumber)
         let convertedValue = convertLength(from: self.inputUnit.first?.value as! UnitLength,
                                            to: self.outputUnit.first?.value as! UnitLength,
                                            value: newVal as! Double)
         self.outputLabel.stringValue = String(convertedValue)
-        self.latestValue = convertedValue
+        self.latestValue = newVal as! Double
+        
+        if(val == nil) {
+            self.inputField.stringValue = String(latestValue)
+        }
     }
     
     // @convertLength takes two unit types and a value and outputs the converted value
