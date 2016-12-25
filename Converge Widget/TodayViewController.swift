@@ -120,6 +120,10 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     }
     
     // @updateFromInput reads the input text field, converts the value, and outputs to the output label
+    // FIXME: Overzealous Formatter
+    //        The formatter strips periods and resets the text field when an invalid character is entered.
+    //        Previous behavior was to select entire field when invalid character was entered, and to allow
+    //        periods, which is preferable.
     func updateFromInput() {
         let valueField: NSTextField = self.inputField
         let val = valueField.objectValue
