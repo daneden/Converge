@@ -10,7 +10,9 @@
         <customObject id="-2" userLabel="File's Owner" customClass="TodayViewController" customModule="Converge_Widget" customModuleProvider="target">
             <connections>
                 <outlet property="inputField" destination="35D-lM-vBO" id="65i-xE-NDu"/>
+                <outlet property="inputPopUp" destination="WtQ-nq-0B8" id="shv-Ci-q3P"/>
                 <outlet property="outputLabel" destination="fcV-1w-mde" id="Sva-GG-AcA"/>
+                <outlet property="outputPopUp" destination="4TU-0B-PKO" id="tAD-YZ-6JW"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -38,6 +40,9 @@
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
+                                    <connections>
+                                        <action selector="inputUnitDidChange:" target="-2" id="DZn-Ew-Ydf"/>
+                                    </connections>
                                 </popUpButton>
                                 <customView placeholderIntrinsicWidth="161" placeholderIntrinsicHeight="42" translatesAutoresizingMaskIntoConstraints="NO" id="ghf-sb-W00" userLabel="Input Container">
                                     <rect key="frame" x="0.0" y="0.0" width="161" height="36"/>
@@ -96,6 +101,9 @@
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
+                                    <connections>
+                                        <action selector="outputUnitDidChange:" target="-2" id="D9K-5j-DP7"/>
+                                    </connections>
                                 </popUpButton>
                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Bs3-89-mDr" userLabel="Output Container">
                                     <rect key="frame" x="0.0" y="0.0" width="161" height="36"/>

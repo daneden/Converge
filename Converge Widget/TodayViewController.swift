@@ -12,69 +12,137 @@ import NotificationCenter
 
 class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDelegate {
     
+    
+    // MARK: Variable Setup
     override var nibName: String? {
         return "TodayViewController"
     }
     
+    // InterfaceKit items
+    @IBOutlet weak var outputLabel: NSTextField!
+    @IBOutlet weak var inputField: NSTextField!
+    @IBOutlet weak var inputPopUp: NSPopUpButton!
+    @IBOutlet weak var outputPopUp: NSPopUpButton!
+    
+    // input/outputUnit will be our record of the current unit types
+    var inputUnit: [String:Unit] = [:]
+    var outputUnit: [String:Unit] = [:]
+    
+    // The number formatter for text input
+    var convertorFormatter: NumberFormatter!
+    
+    // latest value of the text input (used as backup for overzealous number formatter)
+    var latestValue: Double!
+    
+    // MARK: Misc. Setup
+    // Reset margin insets
     func widgetMarginInsets(forProposedMarginInsets defaultMarginInset: EdgeInsets) -> EdgeInsets {
         return NSEdgeInsetsMake(0, 0, 0, 0)
     }
     
-    @IBOutlet weak var outputLabel: NSTextField!
-    @IBOutlet weak var inputField: NSTextField!
-    
-    var convertorFormatter: NumberFormatter!
-    var latestValue: Double!
-    
+    // MARK: Initialization
     func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
         // Update your data and prepare for a snapshot. Call completion handler when you are done
         // with NoData if nothing has changed or NewData if there is new data since the last
         // time we called you
         completionHandler(.noData)
         
+        // MARK: Formatter Setup
         // convertorFormatter will format our input to disallow non-numeric chars
         convertorFormatter = NumberFormatter()
+        convertorFormatter.usesGroupingSeparator = false
         convertorFormatter.allowsFloats = true
         convertorFormatter.numberStyle = .decimal
         convertorFormatter.minimumFractionDigits = 0
-        convertorFormatter.maximumFractionDigits = 4
         
+        // MARK: Input Field Setup
         self.inputField.delegate = self
         self.inputField.formatter = convertorFormatter
         
-        let u = UnitLength.feet
-        let m = Measurement.init(value: 2, unit: u)
-        print(m)
-        print(m.converted(to: UnitLength.meters))
+        // MARK: Pop-Up Menu Setup
+        inputPopUp.removeAllItems()
+        outputPopUp.removeAllItems()
+        initMenu(menu: inputPopUp, entries: Length)
+        initMenu(menu: outputPopUp, entries: Length)
+        
+        inputPopUp.selectItem(withTitle: "Centimeters")
+        outputPopUp.selectItem(withTitle: "Inches")
+        updateSelection()
     }
     
-    override func controlTextDidChange(_ obj: Notification) {
-        // Because NumberFormatter.typeValue runs validation on the text field,
-        // we have to make a copy of the text field, grab its value, check for
-        // non-numeric characters ourselves, then validate in order to allow
-        // trailing decimal points.
-        let valueField: NSTextField = self.inputField
-        let formatter: NumberFormatter = valueField.formatter as! NumberFormatter
-        let editor: NSText = valueField.currentEditor()!
-        let newVal = formatter.number(from:editor.string!)?.stringValue
+    // MARK: Pop-Up Menus
+    // Call @unitDidChange whenever the value for the popups change
+    @IBAction func inputUnitDidChange(_ sender: NSPopUpButton) { unitDidChange(sender) }
+    @IBAction func outputUnitDidChange(_ sender: NSPopUpButton) { unitDidChange(sender) }
+    
+    // @unitDidChange is called by any of the popup menus when their selection changes
+    func unitDidChange(_ sender: NSPopUpButton) {
+        let changed: NSPopUpButton,
+            opposite: NSPopUpButton,
+            changedUnit: [String:Unit]
         
-        // Checking for any text value should yield nil if non-numeric values are used
-        // since we're using NumberFormatter to clean the output
-        if (newVal?.range(of: ".*", options: .regularExpression, range: nil, locale: nil)) == nil {
-            // NumberFormatter.typeValue triggers a validation, so the field will be
-            // cleared of non-numeric characters
-            let _ = convertorFormatter.number(from: self.inputField.stringValue)?.stringValue
-            self.inputField.stringValue = String(self.latestValue)
+        if(sender == self.inputPopUp) {
+            changed = self.inputPopUp
+            opposite = self.outputPopUp
+            changedUnit = self.inputUnit
         } else {
-            // If all we have are numbers, signs, or decimal points, fire away
-            let n = (newVal == nil ? 0 : Double(newVal!))
-            self.outputLabel.stringValue = String(cmToIn(n!))
-            self.latestValue = n
+            changed = self.outputPopUp
+            opposite = self.inputPopUp
+            changedUnit = self.outputUnit
+        }
+        
+        if(changed.selectedItem?.title == opposite.selectedItem?.title) {
+            opposite.selectItem(withTitle: (changedUnit.first?.key)!)
+        }
+        
+        updateSelection()
+        updateFromInput()
+    }
+    
+    // @initMenu populates the popup menus with the units for conversion
+    func initMenu(menu: NSPopUpButton, entries: [String:Unit]) {
+        for (key, _) in entries {
+            menu.addItem(withTitle: key)
         }
     }
     
-    func cmToIn(_ val: Double) -> Double {
-        let cm = Measurement.init(value: Double(val), unit: UnitLength.centimeters)
-        return round(cm.converted(to: UnitLength.inches).value * 1000) / 1000
+    // @updateSelection updates the records of the unit types to the currently selected units
+    func updateSelection() {
+        let i: String = (self.inputPopUp.selectedItem?.title)!
+        let o: String = (self.outputPopUp.selectedItem?.title)!
+        self.inputUnit = [i: Length[i]!]
+        self.outputUnit = [o: Length[o]!]
+    }
+    
+    // MARK: Text Input
+    override func controlTextDidChange(_ obj: Notification) {
+        updateFromInput()
+    }
+    
+    // @updateFromInput reads the input text field, converts the value, and outputs to the output label
+    func updateFromInput() {
+        let valueField: NSTextField = self.inputField
+        let val = valueField.objectValue
+        if(val == nil) {
+            
+        }
+        let newVal = (valueField.objectValue != nil ? valueField.objectValue! : 0.0)
+        let convertedValue = convertLength(from: self.inputUnit.first?.value as! UnitLength,
+                                           to: self.outputUnit.first?.value as! UnitLength,
+                                           value: newVal as! Double)
+        self.outputLabel.stringValue = String(convertedValue)
+        self.latestValue = convertedValue
+    }
+    
+    // @convertLength takes two unit types and a value and outputs the converted value
+    func convertLength(from: UnitLength, to: UnitLength, value: Double) -> Double {
+        let input = Measurement.init(value: Double(value), unit: from)
+        return roundTo(decimals: 3, value: input.converted(to: to).value)
+    }
+    
+    // @roundTo rounds a value to n decimal places, where n is the first argument
+    func roundTo(decimals: Double, value: Double) -> Double {
+        let n = pow(10, decimals)
+        return round(value * n) / n
     }
 }
