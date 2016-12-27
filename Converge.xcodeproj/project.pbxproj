@@ -59,6 +59,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		712D66891E132D8200D87E46 /* Converge.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Converge.entitlements; sourceTree = "<group>"; };
 		7143BDCF1E0EE64500FD4DEB /* UnitTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnitTypes.swift; sourceTree = "<group>"; };
 		715B18481E0C4CBB00029065 /* Converge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Converge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		715B184B1E0C4CBB00029065 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -139,6 +140,7 @@
 		715B184A1E0C4CBB00029065 /* Converge */ = {
 			isa = PBXGroup;
 			children = (
+				712D66891E132D8200D87E46 /* Converge.entitlements */,
 				715B184B1E0C4CBB00029065 /* AppDelegate.swift */,
 				715B184D1E0C4CBB00029065 /* Assets.xcassets */,
 				715B184F1E0C4CBB00029065 /* MainMenu.xib */,
@@ -282,6 +284,11 @@
 					715B18471E0C4CBB00029065 = {
 						CreatedOnToolsVersion = 8.2.1;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
 					};
 					715B18561E0C4CBB00029065 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -532,6 +539,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Converge/Converge.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Converge/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -546,6 +554,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Converge/Converge.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Converge/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
