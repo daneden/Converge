@@ -28,15 +28,6 @@ enum Types {
     case UnitArea
 }
 
-let UnitTypes: Array<Any> = [
-    UnitLength.self,
-    UnitVolume.self,
-    UnitTemperature.self,
-    UnitSpeed.self,
-    UnitMass.self,
-    UnitArea.self
-]
-
 let Length: Array<DEUnit> = [
     ["Kilometers": UnitLength.kilometers],
     ["Meters": UnitLength.meters],

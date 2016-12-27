@@ -170,12 +170,6 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
         }
     }
     
-    // @convertLength takes two unit types and a value and outputs the converted value
-    func convertLength(from: UnitLength, to: UnitLength, value: Double) -> Double {
-        let input = Measurement.init(value: Double(value), unit: from)
-        return roundTo(decimals: 3, value: input.converted(to: to).value)
-    }
-    
     // @roundTo rounds a value to n decimal places, where n is the first argument
     func roundTo(decimals: Double, value: Double) -> Double {
         let n = pow(10, decimals)
