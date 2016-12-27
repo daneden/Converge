@@ -9,6 +9,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TodayViewController" customModule="Converge_Widget" customModuleProvider="target">
             <connections>
+                <outlet property="conversionPopUp" destination="5XD-zR-p0g" id="upC-k0-XNK"/>
                 <outlet property="inputField" destination="35D-lM-vBO" id="65i-xE-NDu"/>
                 <outlet property="inputPopUp" destination="WtQ-nq-0B8" id="shv-Ci-q3P"/>
                 <outlet property="outputLabel" destination="fcV-1w-mde" id="Sva-GG-AcA"/>
@@ -21,11 +22,31 @@
         <customView appearanceType="aqua" simulatedAppContext="notificationCenter" translatesAutoresizingMaskIntoConstraints="NO" id="Hz6-mo-xeY">
             <rect key="frame" x="0.0" y="0.0" width="322" height="98"/>
             <subviews>
+                <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="5XD-zR-p0g" userLabel="Conversion Type Pop Up">
+                    <rect key="frame" x="0.0" y="78" width="312" height="18"/>
+                    <popUpButtonCell key="cell" type="bevel" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="NK3-UQ-a1j" id="aZW-me-Hjf">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="0CO-lv-e0q">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="NK3-UQ-a1j"/>
+                                <menuItem title="Item 2" id="xsr-3l-7zt"/>
+                                <menuItem title="Item 3" id="jin-2s-ZkW"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="conversionSelectionDidChange:" target="-2" id="emg-Mm-Bjm"/>
+                    </connections>
+                </popUpButton>
+                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="XJU-Ud-VsR">
+                    <rect key="frame" x="0.0" y="72" width="322" height="4"/>
+                </box>
                 <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJN-Eg-TTv" userLabel="Main Stack">
-                    <rect key="frame" x="0.0" y="0.0" width="322" height="94"/>
+                    <rect key="frame" x="0.0" y="0.0" width="322" height="70"/>
                     <subviews>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="euk-J7-YLt" userLabel="Input Stack">
-                            <rect key="frame" x="0.0" y="40" width="161" height="54"/>
+                            <rect key="frame" x="0.0" y="16" width="161" height="54"/>
                             <subviews>
                                 <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="WtQ-nq-0B8" userLabel="Input Type">
                                     <rect key="frame" x="0.0" y="36" width="151" height="18"/>
@@ -86,7 +107,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kcE-Yv-XlN" userLabel="Output Stack">
-                            <rect key="frame" x="161" y="40" width="161" height="54"/>
+                            <rect key="frame" x="161" y="16" width="161" height="54"/>
                             <subviews>
                                 <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="4TU-0B-PKO" userLabel="Output Type">
                                     <rect key="frame" x="0.0" y="36" width="151" height="18"/>
@@ -159,10 +180,17 @@
                 </stackView>
             </subviews>
             <constraints>
-                <constraint firstItem="LJN-Eg-TTv" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="MFx-PO-dGk"/>
+                <constraint firstItem="5XD-zR-p0g" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="2" id="EdS-hd-vEA"/>
+                <constraint firstAttribute="trailing" secondItem="5XD-zR-p0g" secondAttribute="trailing" constant="10" id="J6C-vx-4QE"/>
                 <constraint firstAttribute="trailing" secondItem="LJN-Eg-TTv" secondAttribute="trailing" id="OBi-MH-5hQ"/>
+                <constraint firstItem="LJN-Eg-TTv" firstAttribute="top" secondItem="5XD-zR-p0g" secondAttribute="bottom" constant="8" id="OY8-OQ-hco"/>
+                <constraint firstItem="LJN-Eg-TTv" firstAttribute="top" secondItem="XJU-Ud-VsR" secondAttribute="bottom" constant="4" id="RR7-2L-kRL"/>
+                <constraint firstItem="XJU-Ud-VsR" firstAttribute="top" secondItem="5XD-zR-p0g" secondAttribute="bottom" constant="4" id="SUd-UW-buc"/>
                 <constraint firstItem="LJN-Eg-TTv" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="b09-Qn-s1K"/>
+                <constraint firstItem="XJU-Ud-VsR" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="cDs-S9-Ud9"/>
                 <constraint firstAttribute="bottom" secondItem="LJN-Eg-TTv" secondAttribute="bottom" id="dUc-Yg-EoO"/>
+                <constraint firstItem="5XD-zR-p0g" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="iUK-60-GS8"/>
+                <constraint firstAttribute="trailing" secondItem="XJU-Ud-VsR" secondAttribute="trailing" id="wPF-ky-JV2"/>
             </constraints>
             <point key="canvasLocation" x="139" y="213.5"/>
         </customView>

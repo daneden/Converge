@@ -19,6 +19,7 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     }
     
     // InterfaceKit items
+    @IBOutlet weak var conversionPopUp: NSPopUpButton!
     @IBOutlet weak var outputLabel: NSTextField!
     @IBOutlet weak var inputField: NSTextField!
     @IBOutlet weak var inputPopUp: NSPopUpButton!
@@ -33,6 +34,9 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     
     // latest value of the text input (used as backup for overzealous number formatter)
     var latestValue: Double! = 0.0
+    
+    var units: Array<DEUnit> = []
+    var conversionTypes: Array<[String:Array<DEUnit>]> = Units
     
     // MARK: Misc. Setup
     // Reset margin insets
@@ -55,24 +59,50 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
         convertorFormatter.numberStyle = .decimal
         convertorFormatter.minimumFractionDigits = 0
         
+        self.units = initUnits(unitType: Length)
+        
         // MARK: Input Field Setup
         self.inputField.delegate = self
+        self.outputLabel.isSelectable = true
         
         // MARK: Pop-Up Menu Setup
+        
+        conversionPopUp.removeAllItems()
+        initMenu(menu: conversionPopUp, entries: self.conversionTypes)
+        
+        conversionPopUp.selectItem(withTitle: "Length")
+        initializeConversions()
+    }
+    
+    func initializeConversions() {
+        let i = self.conversionPopUp.indexOfSelectedItem
+        self.units = (self.conversionTypes[i].first?.value)!
+        resetMenus()
+        self.inputPopUp.selectItem(withTitle: (self.units[0].first?.key)!)
+        self.outputPopUp.selectItem(withTitle: (self.units[1].first?.key)!)
+        updateSelection()
+        updateFromInput()
+    }
+    
+    func resetMenus() {
         inputPopUp.removeAllItems()
         outputPopUp.removeAllItems()
-        initMenu(menu: inputPopUp, entries: Length)
-        initMenu(menu: outputPopUp, entries: Length)
-        
-        inputPopUp.selectItem(withTitle: "Centimeters")
-        outputPopUp.selectItem(withTitle: "Inches")
-        updateSelection()
+        initMenu(menu: inputPopUp, entries: self.units)
+        initMenu(menu: outputPopUp, entries: self.units)
     }
     
     // MARK: Pop-Up Menus
     // Call @unitDidChange whenever the value for the popups change
+    @IBAction func conversionSelectionDidChange(_ sender: NSPopUpButton) {
+        initializeConversions()
+    }
+    
     @IBAction func inputUnitDidChange(_ sender: NSPopUpButton) { unitDidChange(sender) }
     @IBAction func outputUnitDidChange(_ sender: NSPopUpButton) { unitDidChange(sender) }
+    
+    func initUnits(unitType: Array<DEUnit>) -> Array<DEUnit> {
+        return unitType
+    }
     
     // @unitDidChange is called by any of the popup menus when their selection changes
     func unitDidChange(_ sender: NSPopUpButton) {
@@ -93,18 +123,30 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
     }
     
     // @initMenu populates the popup menus with the units for conversion
-    func initMenu(menu: NSPopUpButton, entries: [String:Unit]) {
-        for (key, _) in entries {
-            menu.addItem(withTitle: key)
+    func initMenu(menu: NSPopUpButton, entries: Array<[String:Any]>) {
+        for (entry) in entries {
+            menu.addItem(withTitle: (entry.first?.key)!)
         }
+    }
+    
+    func findUnitInDict(dict: Array<DEUnit>, unit: String) -> Int {
+        for i in 0 ..< dict.count {
+            if(dict[i].first?.key == unit) {
+                return i
+            }
+        }
+        
+        return -1
     }
     
     // @updateSelection updates the records of the unit types to the currently selected units
     func updateSelection() {
         let i: String = (self.inputPopUp.selectedItem?.title)!
         let o: String = (self.outputPopUp.selectedItem?.title)!
-        self.inputUnit = [i: Length[i]!]
-        self.outputUnit = [o: Length[o]!]
+        let iunit = findUnitInDict(dict: self.units, unit: i)
+        let ounit = findUnitInDict(dict: self.units, unit: o)
+        self.inputUnit = [i: (self.units[iunit].first?.value)!]
+        self.outputUnit = [o: (self.units[ounit].first?.value)!]
     }
     
     // MARK: Text Input
@@ -117,9 +159,9 @@ class TodayViewController: NSViewController, NCWidgetProviding, NSTextFieldDeleg
         let valueField: NSTextField = self.inputField
         let val = convertorFormatter.number(from: valueField.objectValue as! String)
         let newVal = (val != nil ? val : self.latestValue as NSNumber)
-        let convertedValue = convertLength(from: self.inputUnit.first?.value as! UnitLength,
-                                           to: self.outputUnit.first?.value as! UnitLength,
-                                           value: newVal as! Double)
+        
+        let input = Measurement.init(value: Double(newVal!), unit: (self.inputUnit.first?.value)! as! Dimension)
+        let convertedValue = roundTo(decimals: 3, value: input.converted(to: (self.outputUnit.first?.value)! as! Dimension).value)
         self.outputLabel.stringValue = String(convertedValue)
         self.latestValue = newVal as! Double
         
